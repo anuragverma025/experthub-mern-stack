@@ -1,34 +1,27 @@
 const mongoose = require('mongoose');
 
 const BookingSchema = new mongoose.Schema({
-  customerId: { 
+  // We use 'user' and 'expert' to match our logic
+  user: { 
     type: mongoose.Schema.Types.ObjectId, 
     ref: 'User', 
     required: true 
   },
-  expertId: { 
+  expert: { 
     type: mongoose.Schema.Types.ObjectId, 
-    ref: 'User', 
+    ref: 'Expert', 
     required: true 
   },
-  date: { 
-    type: String, 
-    required: true 
-  },
-  timeSlot: { 
-    type: String, 
-    required: true 
+  appointmentDate: { 
+    type: Date, 
+    default: Date.now 
   },
   status: { 
     type: String, 
-    enum: ['pending', 'confirmed', 'cancelled'], 
+    enum: ['pending', 'confirmed', 'completed', 'cancelled'],
     default: 'pending' 
-  },
-  createdAt: { 
-    type: Date, 
-    default: Date.now 
   }
-});
+}, { timestamps: true });
 
 module.exports = mongoose.model('Booking', BookingSchema);
 

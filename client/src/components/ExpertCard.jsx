@@ -1,6 +1,27 @@
 import React, { useState } from 'react';
 import BookingModal from './BookingModal';
 
+const handleBook = async () => {
+  try {
+    const user = JSON.parse(localStorage.getItem('user'));
+    if (!user) return alert("Please login first");
+
+        // Inside your handleBook function
+    const bookingData = {
+      userId: currentUser.id, // The person logged in (Client)
+      expertId: expert._id,    // The ID of the Expert Profile document
+      date: selectedDate,
+      timeSlot: selectedTime
+    };
+
+    const res = await axios.post('http://localhost:5000/api/bookings/book', bookingData);
+    alert("✅ Booking Successful!");
+    window.location.href = '/dashboard'; // Redirect to see the result
+  } catch (err) {
+    alert("❌ Booking failed: " + err.response.data.msg);
+  }
+};
+
 const ExpertCard = ({ expert }) => {
   const [showModal, setShowModal] = useState(false);
 

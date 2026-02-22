@@ -1,37 +1,42 @@
 require('dotenv').config();
-
 const mongoose = require('mongoose');
-const User = require('./models/User'); // Assuming this model exists
-const Expert = require('./models/Expert'); // Assuming this model exists
+const User = require('./models/User'); 
+const Expert = require('./models/Expert'); 
 
-// ⚠️ PASTE YOUR ACTUAL MONGODB URI HERE
-// const MONGO_URI = "mongodb+srv://Anurag-Verma:Anshu025@cluster0.mkjyfsw.mongodb.net/expert_booking_db?appName=Cluster0&retryWrites=true&w=majority";
+// 1. Grab the URI from your .env file
+const MONGO_URI = process.env.MONGO_URI;
 
 const seedDatabase = async () => {
   try {
-    await mongoose.connect(process.env.MONGO_URI);
-    console.log("✅ Connected to Database");
+    // 2. Safety check: stop if the secret link is missing
+    if (!MONGO_URI) {
+      console.error("❌ Error: MONGO_URI is missing from .env!");
+      process.exit(1);
+    }
 
-    // Clear existing data just in case
+    await mongoose.connect(MONGO_URI);
+    console.log("✅ Connected to Database for seeding...");
+
+    // Clear existing data
     await Expert.deleteMany({});
     await User.deleteMany({});
 
-    // 1. Create a dummy User who acts as the Expert
+    // 3. Create dummy Users
     const dummyUser = await User.create({
       name: "Dr. Sarah Jenkins",
       email: "sarah@example.com",
-      password: "password123", // In a real app, we'd hash this
+      password: "password123", 
       role: "expert"
     });
 
     const dummyUser2 = await User.create({
-        name: "Mark Zuckerberg",
-        email: "mark@example.com",
-        password: "password123",
-        role: "expert"
-      });
+      name: "Mark Zuckerberg",
+      email: "mark@example.com",
+      password: "password123",
+      role: "expert"
+    });
 
-    // 2. Create the Expert profiles and link them to the users
+    // 4. Create the Expert profiles
     await Expert.create([
       {
         userId: dummyUser._id,
@@ -40,7 +45,7 @@ const seedDatabase = async () => {
         specialty: "Health",
         bio: "Senior medical consultant with 15 years of experience.",
         hourlyRate: 150,
-        isApproved: true // <--- TRUE so they show up on the home page!
+        isApproved: true 
       },
       {
         userId: dummyUser2._id,
@@ -54,10 +59,10 @@ const seedDatabase = async () => {
     ]);
 
     console.log("🌱 Database seeded successfully! Dummy experts created.");
-    process.exit();
+    process.exit(0); // Exit cleanly
   } catch (error) {
     console.error("❌ Error seeding database:", error);
-    process.exit(1);
+    process.exit(1); // Exit with error
   }
 };
 
